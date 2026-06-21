@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telecom Churn Intelligence Analytics Dashboard</title>
+
+    <style>
+        :root{
+            --primary:#2563eb;
+            --secondary:#7c3aed;
+            --success:#10b981;
+            --danger:#ef4444;
+            --bg:#f1f5f9;
+            --card:#ffffff;
+      }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(
+                135deg,
+                #e0f2fe,
+                #dbeafe,
+                #ede9fe
+            );
+            min-height:100vh;
+            color:#1e293b;
+        }
+
+        /* Navbar */
+        .navbar {
+            
+            background:linear-gradient(
+                90deg,
+                #0b0164,
+                #2563eb,
+                #7c3aed
+            );
+
+        }
+
+        .navbar-brand {
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .navbar-nav {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+
+        .navbar-nav a {
+            color: #e2e8f0;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .navbar-nav a:hover {
+            color: white;
+        }
+
+        .active-tab {
+            color: white !important;
+            border-bottom: 2px solid white;
+            padding-bottom: 4px;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1300px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-header h2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: #64748b;
+        }
+
+        /* Metrics Cards */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card{
+            background:rgba(255,255,255,0.9);
+            backdrop-filter: blur(10px);
+            border-radius:18px;
+            padding:25px;
+            box-shadow:0 10px 30px rgba(0,0,0,0.1);
+            transition:0.3s;
+            border-left:5px solid transparent;}
+
+        .card:hover{
+            transform:translateY(-8px);
+            box-shadow:0 20px 40px rgba(0,0,0,0.15);
+    }
+
+        .card-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: #64748b;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .card-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        /* Table Section */
+        .log-section {
+            background:white;
+            border-radius:20px;
+            padding:25px;
+            box-shadow:0 10px 30px rgba(0,0,0,0.08);
+            margin-top:25px;
+        }
+
+        .log-section h3 {
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f1f5f9;
+            padding: 12px;
+            text-align: left;
+            color: #475569;
+            border-bottom: 2px solid #cbd5e1;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: top;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-low {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .strategy-cell {
+            max-width: 350px;
+            color: #475569;
+            font-style: italic;
+        }
+
+        .empty-message {
+            color: #64748b;
+            font-style: italic;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">📶 Telecom Churn Intelligence</a>
+
+        <ul class="navbar-nav">
+            <li><a href="/">Prediction Engine Tool</a></li>
+            <li><a href="/dashboard" class="active-tab">Analytics Dashboard</a></li>
+            <li><a href="/chatbot">Operational Chatbot</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+
+        <div class="page-header">
+            <h2>📊 Executive Subscriber Analytics Panel</h2>
+            <p>System operational evaluations and real-time execution log history entries.</p>
+        </div>
+
+        <div class="metrics-grid">
+
+            <div class="card">
+                <div class="card-title">Total Records Handled</div>
+                <div class="card-value">{{ total_records }}</div>
+            </div>
+
+            <div class="card" style="border-left-color:#dc2626;">
+                <div class="card-title">High Risk Churn Accounts</div>
+                <div class="card-value">{{ total_churned }}</div>
+            </div>
+
+            <div class="card" style="border-left-color:#16a34a;">
+                <div class="card-title">Pipeline System Churn Rate</div>
+                <div class="card-value">{{ churn_rate }}%</div>
+            </div>
+
+        </div>
+
+        <div class="log-section">
+
+            <h3>📊 Churn Analytics Chart</h3>
+
+            <div style="margin:20px 0;">
+                {{ chart_html|safe }}
+            </div>
+
+            <hr style="margin:20px 0;">
+
+            <div class="log-section" style="margin-top:20px;">
+            <h3>📈 Feature Importance Analysis</h3>
+
+                {{ feature_chart_html|safe }}
+            </div>
+            <hr style="margin:20px 0;">
+
+            <div class="log-section" style="margin-top:20px;">
+                <h3>📈 Risk Trend Analysis</h3>
+
+                {{ trend_chart_html | safe }}
+            </div>
+
+   
+
+
+            <h3>📋 System Transaction Ledger Logs</h3>
+
+            {% if db_logs %}
+
+            <div style="overflow-x:auto;">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Tenure</th>
+                            <th>Monthly Bill</th>
+                            <th>Contract</th>
+                            <th>Internet Service</th>
+                            <th>Risk Score</th>
+                            <th>Status</th>
+                            <th>AI Retention Strategy</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for log in db_logs %}
+
+                        <tr>
+                            <td>{{ log['timestamp'] }}</td>
+
+                            <td>{{ log['tenure'] | int }} Months</td>
+
+                            <td>${{ "%.2f"|format(log['monthly_charges']) }}</td>
+
+                            <td>{{ log['contract'] }}</td>
+
+                            <td>{{ log['internet_service'] }}</td>
+
+                            <td>
+                                <strong>{{ log['risk_probability'] }}%</strong>
+                            </td>
+
+                            <td>
+                                {% if log['churn_prediction'] == 'High Risk' %}
+                                    <span class="badge badge-high">🔴 High Risk</span>
+                                {% else %}
+                                    <span class="badge badge-low">🟢 Low Risk</span>
+                                {% endif %}
+                            </td>
+
+                            <td class="strategy-cell">
+                                {{ log['retention_strategy'] }}
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <p class="empty-message">
+                No prediction records found in SQLite database.
+            </p>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</body>
+</html>

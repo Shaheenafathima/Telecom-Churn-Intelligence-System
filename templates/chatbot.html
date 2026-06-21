@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Churn Intelligence - Operational Chatbot</title>
+    <style>
+        :root {
+            --primary-blue: #1e3a8a;
+            --secondary-blue: #2563eb;
+            --bg-slate: #f8fafc;
+            --text-dark: #1e293b;
+            --border-gray: #cbd5e1;
+            --bot-bubble: #eff6ff;
+            --bot-text: #1e40af;
+            --user-bubble: #f1f5f9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-slate);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navigation Header Bar */
+        .navbar {
+            background-color: var(--primary-blue);
+            padding: 1.1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-nav {
+            display: flex;
+            list-style: none;
+            gap: 1.75rem;
+        }
+
+        .navbar-nav a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+        }
+
+        .navbar-nav a:hover {
+            color: white;
+        }
+
+        .navbar-nav a.active-tab {
+            color: white;
+            border-bottom: 2px solid white;
+            padding-bottom: 4px;
+        }
+
+        /* Core Layout Frame */
+        .chat-wrapper {
+            max-width: 950px;
+            width: 100%;
+            margin: 2rem auto;
+            background: white;
+            flex: 1;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .chat-header {
+            background: #f1f5f9;
+            padding: 1.25rem 1.75rem;
+            border-bottom: 1px solid var(--border-gray);
+        }
+
+        .chat-header h3 {
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chat-header p {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        /* Conversational Logging Box */
+        .chat-box {
+            flex: 1;
+            padding: 1.75rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            background: #ffffff;
+            max-height: 550px;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 0.9rem 1.3rem;
+            border-radius: 8px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .bot {
+            background: var(--bot-bubble);
+            color: var(--bot-text);
+            align-self: flex-start;
+            border-left: 4px solid var(--secondary-blue);
+            border-bottom-left-radius: 2px;
+        }
+
+        .user {
+            background: var(--user-bubble);
+            color: var(--text-dark);
+            align-self: flex-end;
+            border-right: 4px solid #94a3b8;
+            border-bottom-right-radius: 2px;
+        }
+
+        .loading-text {
+            font-style: italic;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* User Interaction Dock */
+        .chat-input-area {
+            padding: 1.25rem;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 0.85rem 1rem;
+            border: 1px solid var(--border-gray);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+            background: white;
+        }
+
+        .chat-input:focus {
+            border-color: var(--secondary-blue);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn-send {
+            background: var(--secondary-blue);
+            color: white;
+            border: none;
+            padding: 0.85rem 1.75rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-send:hover {
+            background: var(--primary-blue);
+        }
+        .edit-btn{
+            margin-left:10px;
+            padding:4px 8px;
+            border:none;
+            border-radius:4px;
+            cursor:pointer;
+            font-size:12px;
+            background-color:#e2e8f0;
+        }
+
+        .edit-btn:hover{
+            opacity:0.8;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">📶 Telecom Churn Intelligence</a>
+        <ul class="navbar-nav">
+            <li><a href="/">Prediction Engine Tool</a></li>
+            <li><a href="/dashboard">Analytics Dashboard</a></li>
+            <li><a href="/chatbot" class="active-tab">Operational Chatbot</a></li>
+        </ul>
+    </nav>
+
+    <div class="chat-wrapper">
+        <div class="chat-header">
+            <h3>🤖 Live Telecom Assistant Engine</h3>
+            <p>Inquire regarding calculated retention playbooks, subscriber parameters, or customer lifetime value enhancement strategies.</p>
+        </div>
+        
+        <div class="chat-box" id="chatBox">
+            <div class="message bot">
+                Hello! I am your operational AI assistant linked directly to your customer retention telemetry databases. How can I assist you in exploring high-risk cohorts or evaluating model diagnostics today?
+            </div>
+        </div>
+
+        <div class="chat-input-area">
+            <input type="text" class="chat-input" id="userInput" placeholder="Type an operational support query (e.g., 'How to retain month-to-month users?')..." onkeypress="handleKeyPress(event)">
+            <button class="btn-send" onclick="sendMessage()">Send Query</button>
+        </div>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const input = document.getElementById('userInput');
+            const messageText = input.value.trim();
+            if (!messageText) return;
+
+            // 1. Post user message instantly to screen UI
+            appendMessage(messageText, 'user');
+            input.value = '';
+
+            // 2. Generate typing placeholder layout
+            const chatBox = document.getElementById('chatBox');
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'message bot loading-text';
+            loadingDiv.id = 'ai-loading-bubble';
+            loadingDiv.innerText = '⚡ Gemini AI is assessing parameters...';
+            chatBox.appendChild(loadingDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // 3. Dispatch AJAX request pipeline to Flask API endpoint
+            fetch('/chat_response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: messageText }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Clear out loader bubble
+                const bubble = document.getElementById('ai-loading-bubble');
+                if (bubble) bubble.remove();
+
+                // Inject live dynamic Gemini strategy answer
+                appendMessage(data.response, 'bot');
+            })
+            .catch(error => {
+                const bubble = document.getElementById('ai-loading-bubble');
+                if (bubble) bubble.remove();
+                appendMessage("System interface timeout. Verify that python app.py is processing terminal parameters actively.", 'bot');
+            });
+        }
+
+        function appendMessage(text, sender) {
+
+            const chatBox = document.getElementById('chatBox');
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+
+            if (sender === 'user') {
+
+                messageDiv.innerHTML = `
+                   <span class="message-text">${text}</span>
+                    <button class="edit-btn" onclick="editMessage(this)">
+                      ✏️ Edit
+                    </button>
+                `;
+
+            } else {
+
+                messageDiv.innerHTML = `
+                    <span class="message-text">${text}</span>
+            `;
+        }
+
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+      }
+        function editMessage(button) {
+
+            const messageDiv = button.parentElement;
+
+            const oldText =
+            messageDiv.querySelector('.message-text').innerText;
+
+            document.getElementById('userInput').value = oldText;
+
+            messageDiv.remove();
+       }
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+    </script>
+</body>
+</html>

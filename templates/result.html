@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Diagnostic Run Risk Analysis Result</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f8fafc; margin: 0; padding: 0; }
+        .navbar { background: #1e3a8a; padding: 1rem 2rem; display: flex; gap: 1.5rem; }
+        .navbar a { color: white; text-decoration: none; font-weight: 500; }
+        .container { max-width: 650px; margin: 4rem auto; background: white; padding: 2.5rem; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center; }
+        .result-box { margin: 2rem 0; padding: 1.5rem; border-radius: 6px; }
+        .high-risk { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+        .low-risk { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+        .score { font-size: 3rem; font-weight: 800; margin: 0.5rem 0; }
+        .ai-panel { background: #eff6ff; border-left: 5px solid #2563eb; padding: 1.5rem; text-align: left; margin-top: 2rem; border-radius: 0 6px 6px 0; }
+        .ai-title { font-weight: 700; color: #1e40af; margin-bottom: 0.5rem; }
+        .btn-back { display: inline-block; background: #475569; color: white; padding: 0.75rem 1.5rem; text-decoration: none; border-radius: 6px; font-weight: 600; margin-top: 1.5rem; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="/" style="font-weight: bold; margin-right: auto;">📶 Telecom Churn Intelligence</a>
+        <a href="/">Prediction Tool</a>
+        <a href="/dashboard">Analytics Dashboard</a>
+    </nav>
+
+    <div class="container">
+        <h2>System Risk Diagnostics Completed</h2>
+        
+        <div class="result-box {% if status == 'High Risk' %}high-risk{% else %}low-risk{% endif %}">
+            <h3>Calculated Subscriber Status: {{ status }}</h3>
+            <div class="score">{{ probability }}%</div>
+            <p>Overall probability matrix projection variance indicator score.</p>
+        </div>
+
+        <div class="ai-panel">
+            <div class="ai-title">💡 Automated Gemini AI Corporate Retention Playbook:</div>
+            <p style="color: #334155; line-height: 1.5; font-style: italic;">"{{ strategy }}"</p>
+        </div>
+
+        <div class="ai-panel" style="margin-top:20px;">
+            <div class="ai-title">
+                🧠 Explainable AI Analysis
+            </div>
+
+            <p style="margin-bottom:15px;">
+                Top factors influencing this prediction:
+            </p>
+
+            <ul style="padding-left:20px; line-height:1.8;">
+
+                {% for feature, impact in top_features %}
+
+                <li>
+                    <strong>{{ feature }}</strong>
+
+                    {% if impact > 0 %}
+                        🔴 Increased Risk
+                    {% else %}
+                        🟢 Reduced Risk
+                    {% endif %}
+                </li>
+
+                {% endfor %}
+
+            </ul>
+        </div>
+
+        <a href="/" class="btn-back">⬅️ Process Another Profile</a>
+    </div>
+
+</body>
+</html>
