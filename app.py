@@ -1,3 +1,10 @@
+from dotenv import load_dotenv
+import os
+import google.generativeai as genai
+load_dotenv()
+
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
 import shap
 import numpy as np
 import plotly.graph_objects as go
@@ -7,7 +14,9 @@ import pandas as pd
 import pickle
 import sqlite3
 from datetime import datetime
-import google.generativeai as genai
+
+
+
 
 
 app = Flask(__name__)
@@ -15,7 +24,7 @@ app = Flask(__name__)
 # ==========================================
 # GEMINI CONFIGURATION
 # ==========================================
-genai.configure(api_key="AIzaSyCBv-N1ximef9rrwJkSc9WtIyzbptcsZ90")
+
 
 
 
